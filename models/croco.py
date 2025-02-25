@@ -14,7 +14,7 @@ torch.backends.cuda.matmul.allow_tf32 = True # for gpu >= Ampere and pytorch >= 
 from functools import partial
 
 from models.blocks import Block, DecoderBlock, PatchEmbed
-from models.pos_embed import get_2d_sincos_pos_embed, RoPE2D 
+from models.pos_embed import get_2d_sincos_pos_embed, RoPE2D, RoPE2DInterpolated 
 from models.masking import RandomMask
 
 
@@ -53,7 +53,13 @@ class CroCoNet(nn.Module):
             dec_pos_embed = get_2d_sincos_pos_embed(dec_embed_dim, self.patch_embed.grid_size, n_cls_token=0)
             self.register_buffer('dec_pos_embed', torch.from_numpy(dec_pos_embed).float())
             # pos embedding in each block
-            self.rope = None # nothing for cosine 
+            self.rope = None # nothing for cosine
+        elif pos_embed.startswith('RoPEI'): # eg RoPE100 
+            self.enc_pos_embed = None # nothing to add in the encoder with RoPE
+            self.dec_pos_embed = None # nothing to add in the decoder with RoPE
+            if RoPE2D is None: raise ImportError("Cannot find cuRoPE2D, please install it following the README instructions")
+            freq = float(pos_embed[len('RoPEI'):])
+            self.rope = RoPE2DInterpolated(freq=freq)
         elif pos_embed.startswith('RoPE'): # eg RoPE100 
             self.enc_pos_embed = None # nothing to add in the encoder with RoPE
             self.dec_pos_embed = None # nothing to add in the decoder with RoPE

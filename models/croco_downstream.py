@@ -32,6 +32,7 @@ class CroCoDownstreamMonocularEncoderNoHead(CroCoNet):
         
         """
         super(CroCoDownstreamMonocularEncoderNoHead, self).__init__(**kwargs)
+        pass
 
     def _set_mask_generator(self, *args, **kwargs):
         """ No mask generator """
