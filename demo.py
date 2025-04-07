@@ -16,11 +16,12 @@ def main():
     imagenet_std = [0.229, 0.224, 0.225]
     imagenet_std_tensor = torch.tensor(imagenet_std).view(1,3,1,1).to(device, non_blocking=True)
     trfs = Compose([ToTensor(), Normalize(mean=imagenet_mean, std=imagenet_std)])
-    image1 = trfs(Image.open('assets/Chateau1.png').convert('RGB')).to(device, non_blocking=True).unsqueeze(0)
-    image2 = trfs(Image.open('assets/Chateau2.png').convert('RGB')).to(device, non_blocking=True).unsqueeze(0)
+    image1 = trfs(Image.open('/work/dlclarge1/heimberm-thesis/foundation_model__semantic_correspondences/submodules/croco/assets/Chateau1.png').convert('RGB')).to(device, non_blocking=True).unsqueeze(0)
+    image2 = trfs(Image.open('/work/dlclarge1/heimberm-thesis/foundation_model__semantic_correspondences/submodules/croco/assets/Chateau2.png').convert('RGB')).to(device, non_blocking=True).unsqueeze(0)
+    image2 = trfs(Image.open('/work/dlclarge1/heimberm-thesis/foundation_model__semantic_correspondences/submodules/croco/assets/2010_001216.jpg').convert('RGB')).to(device, non_blocking=True).unsqueeze(0)
     
     # load model 
-    ckpt = torch.load('pretrained_models/CroCo_V2_ViTLarge_BaseDecoder.pth', 'cpu')
+    ckpt = torch.load('/work/dlclarge1/heimberm-thesis/foundation_model__semantic_correspondences/weights/croco/CroCo_V2_ViTBase_BaseDecoder.pth', 'cpu')
     model = CroCoNet( **ckpt.get('croco_kwargs',{})).to(device)
     model.eval()
     msg = model.load_state_dict(ckpt['model'], strict=True)
